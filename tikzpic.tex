@@ -1,0 +1,89 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepgfplotslibrary{units}
+
+\pgfplotsset{every axis legend/.append style={
+    at={(0,0)},
+    anchor=north west,at={(1.01,1)}}}
+
+\pgfplotstableread[col sep=semicolon,header=false]{
+%1;2726.541016;13055.537109;6518.364746;7163.595703;6040.517578;
+%2;2905.699707;13104.707031;6072.265137;6113.904785;6086.677734;
+%4;2914.697510;13095.643555;7563.403809;7219.795898;7151.183105;
+%8;2913.139893;13086.186523;6506.143066;7021.992188;6081.654785;
+%16;2896.950439;13083.428711;7600.913574;7192.825195;7150.223633;
+32;2655.392090;13000.425781;6539.801270;6381.787598;6347.895508;
+64;2525.896240;12949.775391;6065.082031;5823.045410;5804.322266;
+128;2258.916748;12920.651367;6088.017090;5812.470215;5793.954590;
+256;1688.629272;12708.612305;6096.275879;5844.402344;5812.909668;
+512;1166.876587;12541.154297;6436.628418;4737.432617;4719.547852;
+1024;852.637146;12339.111328;6570.973633;3692.120605;3713.732178;
+2048;1084.813110;12051.308594;7110.971191;3318.213867;3310.057129;
+4096;1058.587646;11982.542969;6423.785156;3177.986572;3165.354004;
+8192;854.533264;11436.148438;6550.117188;3031.738037;3071.756104;
+16384;802.139343;6319.664062;7541.964355;3039.142822;3022.240967;
+32768;461.081604;3038.349365;7477.808594;2967.896973;2875.663818;
+65536;423.595367;1982.506836;7355.995117;3007.975586;2961.231689;
+131072;374.872681;1745.506104;5808.579102;3000.247559;2914.859619;
+262144;360.660614;1592.362061;6731.522949;2925.950684;2789.070312;
+524288;351.461975;1598.044678;5029.996094;2875.452637;2650.914551;
+1048576;343.617889;1532.534302;4301.737305;2788.442871;2316.216064;
+2097152;220.580490;1636.383057;3559.375488;2632.539307;1925.116333;
+}\throughput
+
+\begin{document}
+
+\begin{tikzpicture}
+    \begin{semilogxaxis}[
+       log basis x=2,
+       log ticks with fixed point,
+       scaled ticks=false,
+        yticklabel style={%
+        /pgf/number format/fixed,
+        /pgf/number format/precision=1
+    },
+        xlabel=Mapping - Size in Bytes,
+        ylabel=Throughput in MB/s,
+        xmin=0,
+        ytick={1000,4000,7000,10000,13000},
+        xtick={32,256,8192,262144,2097152},
+        xticklabels={32k,256k,8m,256m,2g}]
+    \addplot[smooth,mark=*]
+           table [x index=0,y index=1]{\throughput}
+%           [yshift=8pt]
+%			node[pos=0.9] {Q1}
+			;
+    \addlegendentry{CPU(seq)}
+    
+    \addplot[smooth,color=blue,mark=-]
+           table [x index=0,y index=2]{\throughput}
+%           [yshift=8pt]
+%			node[pos=0.9] {Q1}
+			;
+    \addlegendentry{CPU}
+    
+    \addplot[smooth,mark=x,dashed]
+           table [x index=0,y index=3]{\throughput}
+%           [yshift=8pt]
+%			node[pos=0.9] {Q1}
+			;
+    \addlegendentry{GPU(t)}
+    
+    \addplot[smooth,mark=+,dashed]
+           table [x index=0,y index=4]{\throughput}
+%           [yshift=8pt]
+%			node[pos=0.9] {Q1}
+			;
+    \addlegendentry{GPU(s)}
+    
+    \addplot[smooth,color=red,mark=-]
+           table [x index=0,y index=5]{\throughput}
+%           [yshift=8pt]
+%			node[pos=0.9] {Q1}
+			;
+    \addlegendentry{GPU total}
+    \end{semilogxaxis}
+    \end{tikzpicture}
+    
+\end{document}
